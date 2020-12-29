@@ -25,13 +25,13 @@ import org.springframework.stereotype.Controller;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
-    private TokenManager tokenManager;
+//    private TokenManager tokenManager;
     private RedisTemplate redisTemplate;
     private DefaultPasswordEncoder defaultPasswordEncoder;
 
-    public SecurityConfig(UserDetailsService userDetailsService, TokenManager tokenManager, RedisTemplate redisTemplate, DefaultPasswordEncoder defaultPasswordEncoder) {
+    public SecurityConfig(UserDetailsService userDetailsService,  RedisTemplate redisTemplate, DefaultPasswordEncoder defaultPasswordEncoder) {
         this.userDetailsService = userDetailsService;
-        this.tokenManager = tokenManager;
+//        this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
     }
@@ -48,14 +48,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .addFilter(new TokenLoginFilter(authenticationManager(), tokenManager, redisTemplate))
 //                .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager, redisTemplate));
-        http.authorizeRequests().antMatchers("/").permitAll()
-                .antMatchers("/goVip1/**").hasRole("vip1")
-                .antMatchers("/goVip2/**").hasAnyRole("vip1", "vip2");
+        http.headers().frameOptions().disable();
+        http.authorizeRequests().antMatchers("/toLogin", "/","/login").permitAll().anyRequest().authenticated();
         http.csrf().disable();
         http.formLogin()
                 .loginPage("/toLogin")
                 .loginProcessingUrl("/login").successForwardUrl("/main");
-        http.logout().logoutSuccessUrl("/");
+        http.logout().logoutSuccessUrl("/toLogin");
         http.rememberMe();
 
     }
@@ -71,6 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-//        web.ignoring().antMatchers("/", "/index", "/login/**", "/register", "/logout", "/toRegister");
+        web.ignoring().antMatchers("/bootstrap/**");
+        //        web.ignoring().antMatchers("/", "/index", "/login/**", "/register", "/logout", "/toRegister");
     }
 }

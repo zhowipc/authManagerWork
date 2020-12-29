@@ -1,5 +1,6 @@
 package five.team.service.entity;
 
+import com.google.gson.JsonObject;
 import five.team.service.utils.ResultCode;
 import lombok.Data;
 

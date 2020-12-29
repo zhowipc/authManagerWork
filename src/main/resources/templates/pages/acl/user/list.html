@@ -1,19 +1,526 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="bootstrap-4.5.0-dist/css/bootstrap.min.css"
-          crossorigin="anonymous">
+
+<head th:include="include::header">
+    <style>
+        ma-center {
+            margin: 40px;
+        }
+    </style>
 </head>
-<script src="bootstrap-4.5.0-dist/js/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        crossorigin="anonymous"></script>
-<script src="bootstrap-4.5.0-dist/js/bootstrap.min.js"
-        crossorigin="anonymous"></script>
 
 <body>
-DefaultPasswordEncoder
+<div class="ma-center" style="margin: 30px;">
+    <form class="form-inline" method="post" id="condition-form">
+
+        <div class="form-group mb-2">
+            <label for="inputUsername" class="col-sm-1 col-form-label" style="margin-right: 10px;margin-left: 20px">username:</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="inputUsername" value="" placeholder="admin" name="username">
+            </div>
+        </div>
+        <div class="form-group mb-2">
+            <label for="inputNickname" class="col-sm-1 col-form-label" style="margin-right: 10px;">nickname:</label>
+            <div class="col-sm-3">
+                <input type="text" name="nickname" class="form-control" id="inputNickname" value="" placeholder="tom">
+            </div>
+        </div>
+
+        <div class="form-group  mb-2">
+            <label for="date1" class="col-sm-1 col-form-label" style="margin-right: 10px;">startAndEnd:</label>
+            <input type="text" name="startTime" id="date1" class="form-control">---
+            <input type="text" name="endTime" id="date2" class="form-control">
+        </div>
+        <div class="form-group  mb-2">
+            <button type="button" class="btn btn-secondary" onclick="searchSubmit()">Enter</button>
+            <button type="button" class="btn btn-primary" onclick="reset()">Reset</button>
+        </div>
+    </form>
+    <div class="btn-group btn-group-toggle" data-toggle="buttons" id="toolbar">
+        <button type="button" class="btn btn-primary btn-sm" onclick="deleteBatchIds()">批量删除</button>
+        <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
+                data-target="#addUserModal" data-backdrop="false">添加
+        </button>
+    </div>
+    <div class="modal fade" id="Tip" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>提示</h3>
+                </div>
+                <div class="modal-body" align="center">
+                    <h4 id="tipContent">新增成功</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 新增用户的模态框 -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>新增用户</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="inputAccount" class="col-sm-2 control-label">username</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="username" class="form-control" id="inputAccount"
+                                       placeholder="Username"/>
+                            </div>
+                            <label id="errorAccount" for="inputAccount" class="col-sm-3 control-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword1" class="col-sm-2 control-label">password</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="password" class="form-control" id="inputPassword1"
+                                       placeholder="Password"/>
+                            </div>
+                            <label id="errorName" for="inputPassword1" class="col-sm-3 control-label"></label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="conf1" class="btn btn-default" onclick="addUser()">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="resetAddModal()">取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 修改用户的模态框 -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>编辑用户</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="post" class="form-horizontal">
+                        <div class="form-group" style="display:none">
+                            <label for="editId" class="col-sm-2 control-label">ID</label>
+                            <div class="col-sm-7">
+                                <input type="id" name="id" class="form-control" id="editId" placeholder="ID"/>
+                            </div>
+                        </div>
+                        <div class="form-group" id="updateUserRole">
+                            <p class="font-weight-bolder">修改用户角色</p>
+                        </div>
+
+                        <div class="form-group" id="userStatus">
+
+                            <p class="font-weight-bolder">禁止使用该账号</p>
+
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="conf2" class="btn btn-default" onclick="updateUser()">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="resetAddModal()">取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table" id="bootstrap-table">
+    </table>
+</div>
+<div th:include="include::footer"></div>
+<script>
+    var tableColumns = [
+        {checkbox: true, visible: true},
+        {field: 'username', title: "username"},
+        {field: 'roles', title: "roles", formatter: "listShowFormatter"},
+        {field: 'nickName', title: "nickname"},
+        {field: 'isDelete', title: "status", formatter: "statusFormatter"},
+        {field: 'gmtCreate', title: "createTime", formatter: "changeDateFormatter"},
+        {field: 'id', title: "handle", formatter: 'actionFormatter'},
+    ]
+    $("#bootstrap-table").bootstrapTable({
+        url: "/acl-user/getInfo",
+        method: "post",
+        dataType: "json",
+        striped: true,//是否显示行间隔色
+        cache: false,
+        toolbar: '#toolbar', //工具按钮用哪个容器
+        pagination: true,                   //是否显示分页（*）
+        showPaginationSwitch: true,  //显示切换分页
+        showFullscreen: false, //显示全屏
+        contentType: "application/x-www-form-urlencoded",
+        sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
+        showRefresh: true, //是否显示刷新按钮
+        pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+        pageSize: 5,                     //每页的记录行数（*）
+        pageList: [5, 10, 25, 50, 100],        //可供选择的每页的行数（*）
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列（选择显示的列）
+        clickToSelect: true,                //是否启用点击选中行
+        uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+        columns: tableColumns,
+        sortName: "gmtCreate",
+        sortOrder: "desc",
+        minimumCountColumns: 2,             //最少允许的列数
+        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图
+        detailView: false,                   //是否显示父子表
+
+    })
+    var roles = []
+    var hasroles = []
+    var userId = "";
+    var isDeleted = 0;
+
+    //获取选中的角色id
+    function getRolesIdChecked() {
+        var ids = []
+        console.log($("#updateUserRole div input:checkbox:checked").length)
+        $.each($("#updateUserRole div input:checkbox:checked"), function (i, v) {
+            ids.push(v.value);
+        })
+        return ids;
+
+    }
+
+    function updateUser() {
+        //获取选中的角色id
+        var ids = getRolesIdChecked();
+        console.log(ids);
+        console.log(userId)
+        isDeleted = $("#userStatus input:radio:checked").val();
+        // console.log(isDeleted)
+        $.ajax({
+            url: "/acl-user/updateUser",
+            dataType: "json",
+            async: false,
+            traditional: true,
+            method: "post",
+            data: {roleIds: ids, userId: userId, isDeleted: isDeleted},
+            success: function (response) {
+                $("#editModal").modal("hide");
+                document.getElementById("tipContent").innerText = "修改成功";
+                $("#Tip").modal('show');
+                $("#bootstrap-table").bootstrapTable('refresh');
+            }
+        })
+    }
+
+    //获取角色列表
+    function getRoles() {
+        $.ajax({
+            url: '/acl-role/getAllRoles',
+            dataType: "json",
+            async: false,
+            traditional: true,
+            method: "get",
+            success: function (response) {
+                roles = response.data.roles
+            },
+            error: function () {
+            }
+        })
+    }
+
+    //根据用户id获取拥有的角色
+    function getHasRolesByUserId(id) {
+        // console.log("=================================")
+        // console.log(id)
+        $.ajax({
+            url: "/acl-role/getHasRolesByUserId/" + id,
+            dataType: "json",
+            traditional: true,
+            async: false,
+            method: "get",
+            success: function (response) {
+                // console.log(response)
+                hasroles = response.data.roles
+                console.log(roles);
+                console.log(hasroles);
+                var html = "";
+                $.each(roles, function (i, v) {
+                    var flag = 0;
+                    $.each(hasroles, function (j, vj) {
+                        if (v.id == vj.id) {
+                            html += "<div class=\"form-check form-check-inline\">\n" +
+                                "<input class=\"form-check-input\" type=\"checkbox\" id=\"inlineCheckbox" + i + "\" checked value='" + vj.id + "'>\n" +
+                                "<label class=\"form-check-label\" for=\"inlineCheckbox" + i + "\">" + vj.roleName +
+                                "</label>\n" +
+                                "</div>"
+                            flag = 1;
+                        }
+                    })
+                    if (flag == 0) {
+                        html += "<div class=\"form-check form-check-inline\">\n" +
+                            "<input class=\"form-check-input\" type=\"checkbox\" id=\"inlineCheckbox" + i + "\" value='" + v.id + "'>\n" +
+                            "<label class=\"form-check-label\" for=\"inlineCheckbox" + i + "\">" + v.roleName +
+                            "</label>\n" +
+                            "</div>"
+                    }
+                })
+                $("#updateUserRole div").remove()
+                $("#updateUserRole").append(html);
+
+            },
+        })
+    }
+
+    function updateUserInfo(id) {
+
+        var rows = $("#bootstrap-table").bootstrapTable('getData');
+        var n = rows.length
+        for (var i = 0; i < n; i++) {
+            // console.log("=============")
+            // console.log(rows[i].id)
+            // console.log(id)
+            // console.log(String(id))
+            if (rows[i].id == id) {
+                userId = rows[i].id;
+                getRoles();
+                getHasRolesByUserId(rows[i].id);
+                // debugger
+                var row = rows[i];
+                $('#editId').val(row.id);
+                $("#editModal").modal("show");
+                var html = "";
+                if (rows[i].isDeleted == "1") {
+                    html += " <div class=\"form-check form-check-inline\">\n" +
+                        "                        <input class=\"form-check-input\" checked type=\"radio\" name=\"inlineRadioOptions\" id=\"inlineRadio2\"\n" +
+                        "                    value=\"1\">\n" +
+                        "                        <label class=\"form-check-label\" for=\"inlineRadio2\">禁用</label>\n" +
+                        "                        </div>"
+                    html += "<div class=\"form-check form-check-inline\">\n" +
+                        "                        <input class=\"form-check-input\"  type=\"radio\" name=\"inlineRadioOptions\" id=\"inlineRadio1\"\n" +
+                        "                    value=\"0\">\n" +
+                        "                        <label class=\"form-check-label\" for=\"inlineRadio1\">活跃</label>\n" +
+                        "                        </div>"
+
+                } else {
+                    html += " <div class=\"form-check form-check-inline\">\n" +
+                        "                        <input class=\"form-check-input\"  type=\"radio\" name=\"inlineRadioOptions\" id=\"inlineRadio2\"\n" +
+                        "                    value=\"1\">\n" +
+                        "                        <label class=\"form-check-label\" for=\"inlineRadio2\">禁用</label>\n" +
+                        "                        </div>"
+                    html += "<div class=\"form-check form-check-inline\">\n" +
+                        "                        <input class=\"form-check-input\"  checked type=\"radio\" name=\"inlineRadioOptions\" id=\"inlineRadio1\"\n" +
+                        "                    value=\"0\">\n" +
+                        "                        <label class=\"form-check-label\" for=\"inlineRadio1\">活跃</label>\n" +
+                        "                        </div>"
+                }
+
+                $("#userStatus div").remove()
+                $("#userStatus").append(html);
+                break;
+            }
+        }
+    }
+
+    function deleteUserInfo(id) {
+        var rows = $("#bootstrap-table").bootstrapTable('getData');
+        var n = rows.length
+        for (var i = 0; i < n; i++) {
+            if (rows[i].id == id) {
+                userId = rows[i].id;
+                $.ajax({
+                    url: "/acl-user/deleteUserInfo",
+                    dataType: "json",
+                    traditional: true,
+                    async: false,
+                    method: "post",
+                    data: {id: rows[i].id},
+                    success: function (response) {
+                        console.log(response.code)
+                        document.getElementById("tipContent").innerText = "删除成功";
+                        $("#Tip").modal('show');
+                        $("#bootstrap-table").bootstrapTable("refresh");
+
+                    },
+                    error: function () {
+                        document.getElementById("tipContent").innerText = "删除成功";
+                        $("#Tip").modal('show');
+                        $("#bootstrap-table").bootstrapTable("refresh");
+                    }
+                })
+                break;
+            }
+        }
+
+
+    }
+
+    function deleteBatchIds() {
+        var rows = $("#bootstrap-table").bootstrapTable("getSelections");
+        var ids = []
+        var len = rows.length;
+        for (var i = 0; i < len; i++)
+            ids.push(rows[i].id)
+        console.log(ids)
+        $.ajax({
+            url: "/acl-user/deleteBatchIds",
+            dataType: "json",
+            traditional: true,
+            async: false,
+            method: "post",
+            data: {
+                "ids": ids
+            },
+            success: function (data) {
+                if (data.code == "20000") {
+                    document.getElementById("tipContent").innerText = "删除成功";
+                    $("#Tip").modal('show');
+                    $("#bootstrap-table").bootstrapTable("refresh");
+                }
+
+            },
+            error: function () {
+                document.getElementById("tipContent").innerText = "删除失败";
+                $("#Tip").modal('show');
+            }
+        })
+    }
+
+    function addUser() {
+
+        var param = $("#addUserForm").serializeArray();
+        $.ajax({
+            url: "/acl-user/addUser",
+            method: "post",
+            data: param,
+            async: false,
+            dataType: "json",
+            success: function (data) {
+                if (data.code == "20000") {
+                    $("#addUserModal").modal('hide');
+                    document.getElementById("tipContent").innerText = "添加成功";
+                    $("#Tip").modal('show');
+                    $('.modal-backdrop').remove(); //去掉遮罩层
+                    $("#bootstrap-table").bootstrapTable('refresh');
+                } else {
+                    document.getElementById("tipContent").innerText = "新增失败";
+                    $("#bootstrap-table").modal('show');
+                }
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function listShowFormatter(value, row, index) {
+        // console.log(row);
+        var names = row.roles;
+        var result = ""
+        $.each(names, function (i, v) {
+            result += "<span class=\"badge badge-primary\">" + v + "</span>";
+        })
+        // console.log(result)
+        return result;
+    }
+
+    function actionFormatter(value, row, index) {
+        var tid = row.id;
+        var result = ""
+        // alert(id)
+        encodeURI(JSON.stringify(row))
+
+        result += "<button type=\"button\" class=\"btn  btn-primary btn-sm\" data-toggle=\"modal\" id=\"editBtn\"  data-backdrop=\"false\" onclick=\"updateUserInfo(" + String(tid) + ")\">编辑</button>";
+        result += "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-backdrop=\"false\" data-toggle=\"modal\" onclick=\"deleteUserInfo(" + String(tid) + ")\">删除</button>";
+        return result;
+    }
+
+    function statusFormatter(value, row, index) {
+        // console.log(row)
+        if (row.isDeleted) {
+            return "<button type=\"button\" class=\"btn btn-danger btn-sm\">禁用</button>"
+        } else {
+            return "<button type=\"button\" class=\"btn btn-success btn-sm\">活跃</button>"
+        }
+    }
+
+    function changeDateFormatter(value) {
+        var dateVal = value + "";
+        if (value != null) {
+            var date = new Date(parseInt(dateVal.replace("/Date(", "").replace(")/", ""), 10));
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+
+            var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+            var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+            return date.getFullYear() + "-" + month + "-" + currentDate + " " + hours + ":" + minutes + ":" + seconds;
+        }
+
+    }
+
+    function searchSubmit() {
+        var username = $('#inputUsername').val();
+        var nickname = $("#inputNickname").val();
+        // alert(username)
+        var startTime = $("#date1").val()
+        var endTime = $("#date2").val()
+        $.ajax({
+            type: "post",
+            async: false,
+            url: "/acl-user/searchUser",
+            data: {username: username, nickname: nickname, startTime: startTime, endTime: endTime},
+            dataType: "json",
+            success: function (response) {
+                console.log(response)
+                console.log(response.rows);
+                $("#bootstrap-table").bootstrapTable('load', response);
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function reset() {
+        $("#inputUsername").val("");
+        $("#inputNickname").val("");
+        $("#date1").val("");
+        $("#date2").val("");
+        $("#bootstrap-table").bootstrapTable("refresh");
+    }
+
+    $('#date1').datetimepicker({
+        language: 'zh-CN',
+        format: 'yyyy-mm-dd hh:ii:ss',
+        weekStart: 1,
+        todayBtn: 1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        forceParse: 0,
+        showMeridian: 1
+    });
+    $('#date2').datetimepicker({
+        forceParse: 0,
+        language: 'zh-CN',
+        format: 'yyyy-mm-dd hh:ii:ss',
+        weekStart: 1,
+        todayBtn: 1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        showMeridian: 1
+    })
+    // $('#date').datetimepicker({
+    //     forceParse: 0,//设置为0，时间不会跳转1899，会显示当前时间。
+    //     language: 'zh-CN',//显示中文
+    //     format: 'yyyy-MM-dd HH:mm:ss',//显示格式
+    //     minView: "month",//设置只显示到月份
+    //     initialDate: new Date(),//初始化当前日期
+    //     autoclose: true,//选中自动关闭
+    //     todayBtn: true//显示今日按钮
+    // })
+    // $("#date").datetimepicker("setDate", new Date() );  //设置显示默认当天的时间
+</script>
 </body>
 </html>

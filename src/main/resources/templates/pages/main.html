@@ -2,110 +2,17 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="bootstrap-4.5.0-dist/css/bootstrap.min.css"
-          crossorigin="anonymous">
-</head>
-<script src="bootstrap-4.5.0-dist/js/jquery-3.5.1.min.js"></script>
+
+<head th:include="include::header"></head>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         crossorigin="anonymous"></script>
-<script src="bootstrap-4.5.0-dist/js/bootstrap.min.js"
-        crossorigin="anonymous"></script>
-<style>
-</style>
 <body>
+<div th:include="include::footer"></div>
 <div class="container-fluid">
     <div class="row">
         <!--        sider-->
         <div class="col-2" style="height: 100vh; background-color: rgb(236,241,247)">
-            <div class="accordion" id="accordionExample" style="padding-top: 20px">
-                <div class="card">
-                    <div class="card-header" id="headingOne" >
-                        <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                                    data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                权限管理
-                            </button>
-                        </h2>
-                    </div>
-
-                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
-                         data-parent="#accordionExample">
-                        <div class="card-header" id="">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                                        data-target="#collapseOne">
-                                    <a href="/user/list">用户管理</a>
-                                </button>
-                            </h2>
-                        </div>
-                        <div class="card-header">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                                        data-target="#collapseOne">
-                                    <a href="/role/list">角色管理</a>
-                                </button>
-                            </h2>
-                        </div>
-                        <div class="card-header">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                                        data-target="#collapseOne">
-                                    <a href="/menu/list">菜单管理</a>
-                                </button>
-                            </h2>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingTwo">
-                        <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button"
-                                    data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
-                                    aria-controls="collapseTwo">
-                                Collapsible Group Item #2
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                        <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
-                            squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa
-                            nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
-                            single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft
-                            beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                            lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you
-                            probably haven't heard of them accusamus labore sustainable VHS.
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingThree">
-                        <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button"
-                                    data-toggle="collapse" data-target="#collapseThree" aria-expanded="false"
-                                    aria-controls="collapseThree">
-                                Collapsible Group Item #3
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
-                         data-parent="#accordionExample">
-                        <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
-                            squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa
-                            nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
-                            single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft
-                            beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-                            lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you
-                            probably haven't heard of them accusamus labore sustainable VHS.
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ul id="iframeTree" class="dtree" data-id="0"></ul>
         </div>
         <div class="col-10" style="height: 100vh;  background-color: #fffefe">
             <!--            header-->
@@ -120,8 +27,9 @@
                             <div class="dropdown">
                                 <a class="btn btn-secondary dropdown-toggle" href="#" role="button"
                                    id="dropdownMenuLink"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    用户名
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                   sec:authentication="principal.username">
+
                                 </a>
 
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -135,7 +43,13 @@
             </div>
             <!--            container-->
             <div class="row" style="height: 88vh;background-color: #f1f2f4">
+                <div class="embed-responsive">
+                    <!--                    <iframe th:src="@{/acl-user/user/list}">-->
+                    <iframe th:src="@{/acl-role/role/list}" id="iframe_content">
 
+                    </iframe>
+                </div>
+                <!--                <iframe src="1/1.html" height="100%" width="100%" name="demo" scrolling="auto" sandbox="allow-same-origin"></iframe>-->
             </div>
             <!--            footer-->
             <div class="row" style="height: 5vh; background-color: #f7fbfe">
@@ -144,5 +58,49 @@
         </div>
     </div>
 </div>
+<script>
+    layui.extend({
+        dtree: '/bootstrap/layui/js/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['dtree', 'layer', 'jquery'], function () {
+        var dtree = layui.dtree, layer = layui.layer, $ = layui.jquery;
+
+        // 初始化树
+        var DTreeNode = dtree.render({
+            elem: "#iframeTree",
+            url: "/acl-permission/getMenuCont",
+            dataStyle: "layuiStyle",  //使用layui风格的数据格式
+            // checkbar: true,
+            // checkbarType: "no-all", //半选
+            response: {message: "message", statusCode: 0}, //修改response中返回数据的定义
+            // done: function (res, $ul, first) {
+            //     if (first) {
+            //         dtree.chooseDataInit("checkbarTreeInitcheck", "001001,001002");
+            //         // 反选半选状态
+            //         dtree.initNoAllCheck("checkbarTreeInitcheck");
+            //     }
+            // }
+        });
+
+        // 绑定节点点击
+        dtree.on("node('iframeTree')", function (obj) {
+            console.log(obj)
+            var path = obj.param.basicData;
+            var nodeId = obj.param.nodeId;
+            // layer.msg(JSON.stringify(obj.param));
+            // layer.msg(nodeId)
+            // DTreeNode.clickNodeCheckbar(nodeId);// 点击节点选中复选框
+            console.log(path)
+            if (path != null)
+                toShow(path)
+            // var checkbarNodes = dtree.getCheckbarNodesParam("checkbarTreeNode");
+        });
+    });
+
+    function toShow(path) {
+        // $(window.parent.document).find("#Frm_Main").attr("src",url);
+        $("#iframe_content", parent.document.body).attr("src", path)
+    }
+
+</script>
 </body>
 </html>

@@ -3,6 +3,8 @@ package five.team.service.service;
 import five.team.service.entity.AclUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户表 服务类
@@ -13,4 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface AclUserService extends IService<AclUser> {
 
+    void updateUserById(List<String> roleIds, String userId, String isDeleted);
+
+    AclUser getByUsername(String username);
 }

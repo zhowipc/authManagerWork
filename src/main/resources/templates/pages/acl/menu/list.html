@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head th:include="include::header">
+        <style>
+            ma-center {
+                margin: 40px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div th:include="include::footer"></div>
+        <div style="height: 550px;overflow: auto;" id="toolbarDiv">
+            <ul id="toolbarTree7" class="dtree" data-id="0"></ul>
+        </div>
+    </body>
+    <script>
+
+
+        layui.extend({
+            dtree: '/bootstrap/layui/js/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+        }).use(['dtree', 'layer', 'jquery'], function () {
+            var dtree = layui.dtree, layer = layui.layer, $ = layui.jquery;
+
+            // 初始化树
+            var DTreeNode = dtree.render({
+                elem: "#toolbarTree7",
+                url: "/acl-permission/getPermissionMenu/1",
+                toolbar: true,
+                scroll: "#toolbarDiv",
+                // toolbarShow:["add","edit","del"],  // 这样就只会出现两个了
+                toolbarStyle: {
+                    title: "菜单",
+                    area: ["50%", "400px"]
+                },
+                toolbarBtn: [
+                    [
+                        {"label": "uri", "name": "path", "type": "text"},
+                        {"label": "permissionValue", "name": "permissionValue", "type": "text"},
+                        {
+                            "label": "菜单类别", "name": "type", "type": "select", "optionsData": function () {
+                                return {"1": "菜单", "2": "按钮"};
+                            }
+                        },
+                    ],
+                    [
+                        {"label": "uri", "name": "path", "type": "text"},
+                        {"label": "permissionValue", "name": "permissionValue", "type": "text"},
+                        {
+                            "label": "菜单类别", "name": "type", "type": "select", "optionsData": function () {
+                                return {"1": "菜单", "2": "按钮"};
+                            }
+                        },
+                        // {"label": "隐藏域", "name": "name4", "type": "hidden"},
+                        // {"label": "文本域", "name": "name2", "type": "textarea"},
+                        // {"value": "重置按钮", "name": "name6", "type": "reset"},
+                        // {"label": "文本框+只读", "name": "name1", "type": "text", "readonly": true, "value": "只读"},
+                        // {
+                        //     "label": "下拉框+禁用",
+                        //     "name": "name3",
+                        //     "type": "select",
+                        //     "optionsData": {"1": "男", "2": "女", "3": "未知", "4": "泰国归来"},
+                        //     "disabled": true
+                        // },
+                        // {"label": "隐藏域+校验", "name": "name4", "type": "hidden", "verify": "required"},
+                        // {"label": "文本域+默认表单（之前是新增节点文本框）", "name": "name2", "type": "textarea", "defElem": "nowChange"},
+                        // {"value": "提交+默认按钮", "name": "name7", "type": "submit", "defElem": "btn"},
+                    ] // 这就是自定义新增中的内容
+                ],
+                toolbarFun: {
+                    addTreeNode: function (treeNode, $div) {
+                        console.log(treeNode)
+                        // console.log($div)
+                        $.ajax({
+                            type: "post",
+                            data: treeNode,
+                            url: "/acl-permission/addPermission",
+                            success: function (result) {
+
+                                //DTree1.changeTreeNodeAdd(treeNode.nodeId); // 添加成功，返回ID
+                                DTreeNode.changeTreeNodeAdd(true); // 添加成功
+                                //DTree1.changeTreeNodeAdd(result.data); // 添加成功，返回一个JSON对象
+                                // DTreeNode.changeTreeNodeAdd("refresh"); // 添加成功，局部刷新树
+                            },
+                            error: function () {
+                                //DTree1.changeTreeNodeAdd(false); // 添加失败
+                            }
+                        });
+                    },
+                    editTreeLoad: function (treeNode) {
+                        // 这里可以发送ajax请求，来获取参数值，最后将参数值以form能识别的键值对json的形式返回
+                        console.log(treeNode)
+                        $.ajax({
+                            url: "/acl-permission/getOnePermissionById/" + treeNode.nodeId,
+                            post: "get",
+                            dataType: "json",
+                            success: function (result) {
+                                console.log(result);
+                                var param = result.data
+                                // 这里的param格式为：  {level:treeNode.level, test:"3"};
+                                DTreeNode.changeTreeNodeDone(param); // 配套使用
+                            }
+                        })
+                    },
+                    editTreeNode: function (treeNode, $div) {
+                        console.log(treeNode)
+                        $.ajax({
+                            type: "post",
+                            data: treeNode,
+                            url: "/acl-permission/editPermission",
+                            success: function (result) {
+                                var param = result.data;
+                                console.log(result)
+                                // 这里的param格式为：  {level:treeNode.level, test:"3"};
+                                // DTreeNode.changeTreeNodeDone(param); // 配套使用
+                                DTree1.changeTreeNodeEdit(true);// 修改成功
+                                //DTree1.changeTreeNodeEdit(result.param); // 修改成功，返回一个JSON对象
+                            },
+                            error: function () {
+                            }
+                        });
+                    },
+                    delTreeNode: function (treeNode, $div) {
+                        $.ajax({
+                            type: "post",
+                            data: treeNode,
+                            url: "/acl-permission/deletePermission",
+                            success: function (result) {
+                                DTreeNode.changeTreeNodeDel(true); // 删除成功
+                            },
+                            error: function () {
+                                //DTree1.changeTreeNodeDel(false);// 删除失败
+                            }
+                        });
+                    }
+                },
+                dataStyle: "layuiStyle",  //使用layui风格的数据格式
+                // checkbar: true,
+                // checkbarType: "no-all", //半选
+                response: {message: "message", statusCode: 0}, //修改response中返回数据的定义
+                // done: function (res, $ul, first) {
+                //     if (first) {
+                //         dtree.chooseDataInit("checkbarTreeInitcheck", "001001,001002");
+                //         // 反选半选状态
+                //         dtree.initNoAllCheck("checkbarTreeInitcheck");
+                //     }
+                // }
+            });
+
+            // 绑定节点点击
+            dtree.on("node('toolbarTree7')", function (obj) {
+                var nodeId = obj.param.nodeId;
+                // layer.msg(JSON.stringify(obj.param));
+                // layer.msg(nodeId)
+                DTreeNode.clickNodeCheckbar(nodeId);// 点击节点选中复选框
+                // var checkbarNodes = dtree.getCheckbarNodesParam("checkbarTreeNode");
+            });
+        });
+
+    </script>
+</html>

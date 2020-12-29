@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
+//@Component
 public class TokenManager {
     private long tokenExpiration = 1000 * 60 * 30 * 100;
     private String tokenSignKey = "1231122";
