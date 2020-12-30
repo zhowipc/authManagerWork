@@ -2,6 +2,7 @@ package five.team.service.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import five.team.service.entity.AclRole;
 import five.team.service.entity.AclUser;
 import five.team.service.entity.Goods;
@@ -11,7 +12,6 @@ import five.team.service.service.AclRoleService;
 import five.team.service.service.AclUserService;
 import five.team.service.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -141,12 +141,27 @@ public class GoodsController {
         return "pages/goods/show";
     }
 
-    @GetMapping("getShowData/{page}/{limit}")
+    @PostMapping("getInitData/{page}/{limit}")
     public @ResponseBody
-    R getShowData(@PathVariable String page, @PathVariable String limit) {
-//        Page<Goods> goodsPage = new Page<>(page,limit);
-//        QueryWrapper<Goods> goodsQueryWrapper = new QueryWrapper<>();
-//        goodsService.page(goodsPage, goodsQueryWrapper);
-//        return R.ok().data("item", goodsPage.)
+    R getInitData(@PathVariable long page, @PathVariable long limit, searchVo searchVo) {
+        QueryWrapper<Goods> goodsQueryWrapper = new QueryWrapper<>();
+        if (searchVo != null) {
+            if (searchVo.getTitle() != null && !searchVo.getTitle().trim().equals("")) {
+                goodsQueryWrapper.like("title", searchVo.getTitle());
+            }
+            if (searchVo.getMinPrice() != null && !searchVo.getMinPrice().trim().equals("")) {
+                goodsQueryWrapper.ge("price", searchVo.getMinPrice());
+            }
+            if (searchVo.getMaxPrice() != null && !searchVo.getMaxPrice().trim().equals("")) {
+                goodsQueryWrapper.ge("price", searchVo.getMaxPrice());
+            }
+        }
+        Page<Goods> goods = new Page<>(page, limit);
+        goodsService.page(goods, goodsQueryWrapper);
+        return R.ok().data("item", goods.getRecords())
+                .data("title", goods.getTotal())
+                .data("pages", goods.getPages())
+                .data("current", goods.getCurrent());
     }
+
 }
