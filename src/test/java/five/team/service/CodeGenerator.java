@@ -65,7 +65,7 @@ public class CodeGenerator {
         // 5、策略配置
         StrategyConfig strategy = new StrategyConfig();
 
-        strategy.setInclude("acl_permission","acl_role","acl_role_permission","acl_user","acl_user_role");
+        strategy.setInclude("goods","review");
 //        strategy.setInclude("acl_user");
 
         strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略

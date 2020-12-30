@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:include="include::header"></head>
+<body>
+<div th:include="include::footer"></div>
+<div>
+
+    <div>
+        <form class="layui-form" id="condition-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="title" autocomplete="off" id="inputTitle" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="username" autocomplete="off" id="inputUsername" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">price</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="price_min" placeholder="￥" id="inputMinPrice" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="price_max" placeholder="￥" id="inputMaxPrice" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="searchSubmit()">立即查找
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="container" id="show">
+
+    </div>
+</div>
+<script>
+    var page = 1, limit = 6;
+
+    function getData() {
+        $.ajax({
+            url: "/goods/getShowData/" + page + "/" + limit,
+            method: "get",
+            dataType: "json",
+            success: function (response) {
+                var param = response.dada.item;
+                var n = param.length;
+                var html = "";
+                for (var i = 0; i < n; i++) {
+                    if (i == 0 || i == 3) {
+                        html += "<div class=\"row\">\n";
+                    }
+
+                    html += "<div class=\"col-sm\">\n" +
+                        "                <div class=\"card\" onclick=\"gotoDetail(" + param[i].id + ")\" style=\"width: 18rem;\">\n" +
+                        "                    <img src=\"https://five-team.oss-cn-guangzhou.aliyuncs.com/2020/12/30/5c6d667895114bd194a674010ad5c2881.png\" class=\"card-img-top\" alt=\"...\">\n" +
+                        "                    <div class=\"card-body\">\n" +
+                        "                        <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of\n" +
+                        "                            the card's content.</p>\n" +
+                        "                    </div>\n" +
+                        "                </div>\n" +
+                        "            </div>"
+                    if (i == 2 || i == 5) {
+                        html += " </div>"
+                    }
+                }
+                if ((n != 0) && (n < 2 || n < 5)) {
+                    html += " </div>"
+                }
+                $("#show div").remove();
+                $("#show").append(html)
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

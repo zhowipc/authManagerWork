@@ -16,34 +16,52 @@
         </div>
         <div class="col-10" style="height: 100vh;  background-color: #fffefe">
             <!--            header-->
-            <div class="row" style="height: 7vh;background-color: #f7fbfe">
+            <div class="row" style="height: 7vh;background-color: #f7fbfe; width: 100%;">
+<!--                <ul class="layui-nav" style="float:right;">-->
+<!--                    <li class="layui-nav-item">-->
+<!--                        <a href="">控制台<span class="layui-badge">9</span></a>-->
+<!--                    </li>-->
+<!--                    <li class="layui-nav-item">-->
+<!--                        <a href="">个人中心<span class="layui-badge-dot"></span></a>-->
+<!--                    </li>-->
+<!--                    <li class="layui-nav-item">-->
+<!--                        <a href=""><img src="//t.cn/RCzsdCq" class="layui-nav-img"-->
+<!--                                        sec:authentication="principal.username"></a>-->
+<!--                        <dl class="layui-nav-child">-->
+<!--                            <dd><a href="javascript:;">修改信息</a></dd>-->
+<!--                            <dd><a href="javascript:;">安全管理</a></dd>-->
+<!--                            <dd><a href="javascript:;" th:href="@{/logout}">退了</a></dd>-->
+<!--                        </dl>-->
+<!--                    </li>-->
+<!--                </ul>-->
+                                <div class="card mb-3" style="max-width: 540px; margin-left: 90%; border: 0px ">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4">
+                                            <img src="imgs/1.png" class="img-thumbnail" style="width: 100px"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="dropdown">
+                                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button"
+                                                   id="dropdownMenuLink"
+                                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                   sec:authentication="principal.username">
 
-                <div class="card mb-3" style="max-width: 540px; margin-left: 80%; border: 0px ">
-                    <div class="row no-gutters">
-                        <div class="col-md-4">
-                            <img src="imgs/1.png" class="img-thumbnail" style="width: 100px"/>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="dropdown">
-                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button"
-                                   id="dropdownMenuLink"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                   sec:authentication="principal.username">
+                                                </a>
 
-                                </a>
-
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item" href="#">个人信息</a>
-                                    <a class="dropdown-item" th:href="@{/logout}">注销</a>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item"  href="#">个人信息</a>
+                                                    <a class="dropdown-item" th:href="@{/logout}">注销</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!--            container-->
             <div class="row" style="height: 88vh;background-color: #f1f2f4">
+
                 <div class="embed-responsive">
+                    角色：<span sec:authentication="principal.authorities"></span>
                     <!--                    <iframe th:src="@{/acl-user/user/list}">-->
                     <iframe th:src="@{/acl-role/role/list}" id="iframe_content">
 
@@ -53,7 +71,20 @@
             </div>
             <!--            footer-->
             <div class="row" style="height: 5vh; background-color: #f7fbfe">
-                One of three columns
+                <fieldset class="layui-elem-field">
+                    <legend>
+
+                        <span class="layui-badge-dot layui-bg-orange"></span>
+                        <span class="layui-badge-dot layui-bg-green"></span>
+                        <span class="layui-badge-dot layui-bg-cyan"></span>
+                        @five-team
+                        <span class="layui-badge-dot layui-bg-orange"></span>
+                        <span class="layui-badge-dot layui-bg-green"></span>
+                        <span class="layui-badge-dot layui-bg-cyan"></span>
+                    </legend>
+                    <div class="layui-field-box">
+                    </div>
+                </fieldset>
             </div>
         </div>
     </div>

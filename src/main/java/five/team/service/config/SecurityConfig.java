@@ -25,11 +25,11 @@ import org.springframework.stereotype.Controller;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
-//    private TokenManager tokenManager;
+    //    private TokenManager tokenManager;
     private RedisTemplate redisTemplate;
     private DefaultPasswordEncoder defaultPasswordEncoder;
 
-    public SecurityConfig(UserDetailsService userDetailsService,  RedisTemplate redisTemplate, DefaultPasswordEncoder defaultPasswordEncoder) {
+    public SecurityConfig(UserDetailsService userDetailsService, RedisTemplate redisTemplate, DefaultPasswordEncoder defaultPasswordEncoder) {
         this.userDetailsService = userDetailsService;
 //        this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
@@ -49,7 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .addFilter(new TokenLoginFilter(authenticationManager(), tokenManager, redisTemplate))
 //                .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager, redisTemplate));
         http.headers().frameOptions().disable();
-        http.authorizeRequests().antMatchers("/toLogin", "/","/login").permitAll().anyRequest().authenticated();
+//        http.authorizeRequests().antMatchers("/acl-permission/menu/list/**").hasAnyRole("AUTH");
+        http.authorizeRequests().antMatchers("/toLogin", "/", "/login").permitAll();
+        http.authorizeRequests().anyRequest().authenticated();
         http.csrf().disable();
         http.formLogin()
                 .loginPage("/toLogin")

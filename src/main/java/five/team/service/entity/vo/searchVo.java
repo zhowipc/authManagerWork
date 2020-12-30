@@ -5,9 +5,12 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class UserSearch {
+public class searchVo {
     private String username;
     private String nickname;
     private String startTime;
     private String endTime;
+    private String title;
+    private String minPrice;
+    private String maxPrice;
 }

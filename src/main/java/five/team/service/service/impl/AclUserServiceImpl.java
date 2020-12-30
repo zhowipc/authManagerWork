@@ -70,7 +70,7 @@ public class AclUserServiceImpl extends ServiceImpl<AclUserMapper, AclUser> impl
 
     @Override
     public AclUser getByUsername(String username) {
-        AclUser username1 = baseMapper.selectOne(new QueryWrapper<AclUser>().eq("username", username));
+        AclUser username1 = baseMapper.selectOne(new QueryWrapper<AclUser>().eq("username", username).eq("is_deleted",0));
         return username1;
     }
 }

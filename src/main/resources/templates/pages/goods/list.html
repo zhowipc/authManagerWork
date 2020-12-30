@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:include="include::header"></head>
+<body>
+<div class="ma-center" style="margin: 30px;">
+    <form class="layui-form" id="condition-form">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="title" autocomplete="off" id="inputTitle" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">用户</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="username" autocomplete="off" id="inputUsername" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">price</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="price_min" placeholder="￥" id="inputMinPrice" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="price_max" placeholder="￥" id="inputMaxPrice" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-inline">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="searchSubmit()">立即查找</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+    <div class="btn-group btn-group-toggle" data-toggle="buttons" id="toolbar">
+        <button type="button" class="btn btn-primary btn-sm" onclick="deleteBatchIds()">批量删除</button>
+        <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
+                data-target="#addModal" data-backdrop="false">添加
+        </button>
+    </div>
+    <div class="modal fade" id="Tip" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>提示</h3>
+                </div>
+                <div class="modal-body" align="center">
+                    <h4 id="tipContent">新增成功</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 新增用户的模态框 -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加商品</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="addForm" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="editId" class="col-sm-2 control-label">title</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="title" class="form-control" id="title"
+                                       placeholder="title"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editId" class="col-sm-2 control-label">desc</label>
+                            <div class="col-sm-7">
+                                <textarea class="form-control" name="intro" id="intro"
+                                          rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn" id="addCover">
+                                    <i class="layui-icon">&#xe67c;</i>上传封面
+                                </button>
+                            </div>
+                            <div class="layui-input-block">
+                                <img alt="..." style="width: 150px;height: 150px" class="img-thumbnail"
+                                     id="addShowImages">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editId" class="col-sm-2 control-label">价格</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="price" class="form-control" id="rice"
+                                       placeholder="title"/>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="conf1" class="btn btn-default" onclick="add()">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"
+                                    onclick="resetAddModal()">取消
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 修改用户的模态框 -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>编辑商品</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="post" class="form-horizontal">
+                        <div class="form-group" style="display:none">
+                            <label for="editId" class="col-sm-2 control-label">ID</label>
+                            <div class="col-sm-7">
+                                <input type="id" name="id" class="form-control" id="editId" placeholder="ID"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editId" class="col-sm-2 control-label">title</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="title" class="form-control" id="editTitle"
+                                       placeholder="title"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editId" class="col-sm-2 control-label">desc</label>
+                            <div class="col-sm-7">
+                                <textarea class="form-control" name="intro" id="editIntro"
+                                          rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn" id="cover">
+                                    <i class="layui-icon">&#xe67c;</i>上传封面
+                                </button>
+                            </div>
+                            <div class="layui-input-block">
+                                <img alt="..." style="width: 150px;height: 150px" class="img-thumbnail"
+                                     id="showImages">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editId" class="col-sm-2 control-label">价格</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="price" class="form-control" id="editPrice"
+                                       placeholder="title"/>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="conf2" class="btn btn-default" onclick="updateUser()">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="resetAddModal()">取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:include="include::footer"></div>
+
+    <table class="table" id="bootstrap-table">
+    </table>
+</div>
+<script>
+    var tableColumns = [
+        {checkbox: true, visible: true},
+        {field: 'title', title: "title"},
+        {field: 'price', title: "price",},
+        {field: 'member', title: "member"},
+        {field: 'id', title: "handle", formatter: 'actionFormatter'},
+    ]
+    $("#bootstrap-table").bootstrapTable({
+        url: "/goods/getAllGoods",
+        method: "get",
+        dataType: "json",
+        striped: true,//是否显示行间隔色
+        cache: false,
+        toolbar: '#toolbar', //工具按钮用哪个容器
+        pagination: true,                   //是否显示分页（*）
+        showPaginationSwitch: true,  //显示切换分页
+        showFullscreen: false, //显示全屏
+        contentType: "application/x-www-form-urlencoded",
+        sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
+        showRefresh: true, //是否显示刷新按钮
+        pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+        pageSize: 5,                     //每页的记录行数（*）
+        pageList: [5, 10, 25, 50, 100],        //可供选择的每页的行数（*）
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列（选择显示的列）
+        clickToSelect: true,                //是否启用点击选中行
+        uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+        columns: tableColumns,
+        sortName: "price",
+        sortOrder: "desc",
+        minimumCountColumns: 2,             //最少允许的列数
+        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图
+        detailView: false,                   //是否显示父子表
+    })
+    var goods = {}
+    layui.use('form', function () {
+        var form = layui.form;
+        form.on('submit(formDemo)', function (data) {
+            var username = $('#inputUsername').val();
+            var title = $("#inputTitle").val();
+            // alert(username)
+            var minPrice = $("#inputMinPrice").val()
+            var maxPrice = $("#inputMaxPrice").val()
+            $.ajax({
+                type: "post",
+                async: false,
+                url: "/goods/searchInfo",
+                data: {username: username, title: title, minPrice: minPrice, maxPrice: maxPrice},
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                    console.log(response.rows);
+                    $("#bootstrap-table").bootstrapTable('load', response);
+                },
+                error: function () {
+
+                }
+            })
+            return false;
+        });
+    })
+
+    function getGoodsInfoByGoodsId(goodsId) {
+        $.ajax({
+            url: "/goods/get" + goodsId,
+            method: "get",
+            dataType: "json",
+            success: function (response) {
+                goods = response.data.item;
+
+            }
+        })
+
+    }
+
+    var url = "";
+    layui.use('upload', function () {
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#cover' //绑定元素
+            , url: '/toss/fileoss' //上传接口
+            , done: function (res) {
+                console.log(res);
+                url = res.data.url;
+                // console.log(url);
+                $("#showImages").attr("src", url);
+                console.log(url);
+            }
+            , error: function () {
+                //请求异常回调
+            }
+        });
+    });
+    layui.use('upload', function () {
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#addCover' //绑定元素
+            , url: '/toss/fileoss' //上传接口
+            , done: function (res) {
+                console.log(res);
+                url = res.data.url;
+                // console.log(url);
+                $("#addShowImages").attr("src", url);
+                console.log(url);
+            }
+            , error: function () {
+                //请求异常回调
+            }
+        });
+    });
+
+    function updateUser() {
+        var title = $("#editTitle").val();
+        var id = $('#editId').val();
+        var intro = $("#editIntro").val()
+        var price = $("#editPrice").val()
+        var cover = $("#showImages").attr("src")
+        $.ajax({
+            url: "/goods/updateGoods",
+            dataType: "json",
+            async: false,
+            traditional: true,
+            method: "post",
+            data: {title: title, id: id, intro: intro, price: price, cover: cover},
+            success: function (response) {
+                $("#editModal").modal("hide");
+                document.getElementById("tipContent").innerText = "修改成功";
+                $("#Tip").modal('show');
+                $("#bootstrap-table").bootstrapTable('refresh');
+            }
+        })
+
+    }
+
+    function updateInfo(id) {
+
+        var rows = $("#bootstrap-table").bootstrapTable('getData');
+        var n = rows.length
+        for (var i = 0; i < n; i++) {
+            if (rows[i].id == id) {
+                // getGoodsInfoByGoodsId(rows[i].id)
+                // console.log(goods)
+
+                // debugger
+                var row = rows[i];
+
+                console.log(row);
+                $('#editId').val(row.id);
+                $("#editTitle").val(row.title)
+                $("#editIntro").val(row.intro)
+                $("#editPrice").val(row.price)
+                $("#showImages").attr("src", row.cover)
+                url = row.cover;
+                $("#editModal").modal("show")
+
+                break;
+            }
+        }
+    }
+
+    function add() {
+        var param = $("#addForm").serializeArray();
+        param.file = url;
+        console.log(param);
+        $.ajax({
+            url: "/goods/addGoods",
+            method: "post",
+            data: param,
+            async: false,
+            dataType: "json",
+            success: function (data) {
+                $("#addModal").modal('hide');
+                document.getElementById("tipContent").innerText = "添加成功";
+                $("#Tip").modal('show');
+                $('.modal-backdrop').remove(); //去掉遮罩层
+                $("#bootstrap-table").bootstrapTable('refresh');
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function deleteInfo(id) {
+        var rows = $("#bootstrap-table").bootstrapTable('getData');
+        var n = rows.length
+        for (var i = 0; i < n; i++) {
+            if (rows[i].id == id) {
+                $.ajax({
+                    url: "/goods/deleteGoodsInfo",
+                    dataType: "json",
+                    traditional: true,
+                    async: false,
+                    method: "post",
+                    data: {id: rows[i].id},
+                    success: function (response) {
+                        // console.log(response.code)
+                        document.getElementById("tipContent").innerText = "删除成功";
+                        $("#Tip").modal('show');
+                        $("#bootstrap-table").bootstrapTable("refresh");
+
+                    },
+                    error: function () {
+                        document.getElementById("tipContent").innerText = "删除成功";
+                        $("#Tip").modal('show');
+                        $("#bootstrap-table").bootstrapTable("refresh");
+                    }
+                })
+                break;
+            }
+        }
+    }
+
+    function deleteBatchIds() {
+        var rows = $("#bootstrap-table").bootstrapTable("getSelections");
+        var ids = []
+        var len = rows.length;
+        for (var i = 0; i < len; i++)
+            ids.push(rows[i].id)
+        // console.log(ids)
+        $.ajax({
+            url: "/goods/deleteBatchIds",
+            dataType: "json",
+            traditional: true,
+            async: false,
+            method: "post",
+            data: {
+                "ids": ids
+            },
+            success: function (data) {
+                document.getElementById("tipContent").innerText = "删除成功";
+                $("#Tip").modal('show');
+                $("#bootstrap-table").bootstrapTable("refresh");
+
+
+            },
+            error: function () {
+                document.getElementById("tipContent").innerText = "删除失败";
+                $("#Tip").modal('show');
+            }
+        })
+    }
+
+    function actionFormatter(value, row, index) {
+        var tid = row.id;
+        var result = ""
+        // alert(id)
+        encodeURI(JSON.stringify(row))
+
+        result += "<button type=\"button\" class=\"btn  btn-primary btn-sm\" data-toggle=\"modal\" id=\"editBtn\"  data-backdrop=\"false\" onclick=\"updateInfo(" + String(tid) + ")\">编辑</button>";
+        result += "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-backdrop=\"false\" data-toggle=\"modal\" onclick=\"deleteInfo(" + String(tid) + ")\">删除</button>";
+        return result;
+    }
+</script>
+</body>
+</html>

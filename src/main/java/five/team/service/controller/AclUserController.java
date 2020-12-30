@@ -1,25 +1,20 @@
 package five.team.service.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import five.team.service.entity.AclRole;
 import five.team.service.entity.AclUser;
 import five.team.service.entity.R;
-import five.team.service.entity.vo.UserSearch;
+import five.team.service.entity.vo.searchVo;
 import five.team.service.service.AclRoleService;
 import five.team.service.service.AclUserService;
+import five.team.service.utils.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Array;
-import java.security.acl.Acl;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +39,7 @@ public class AclUserController {
     @PostMapping("/addUser")
     public String addUser(AclUser user) {
         System.out.println("==================================\n" + user);
+        user.setPassword(MD5.encrypt(user.getPassword()));
         userService.save(user);
         JSONObject r = new JSONObject();
         r.put("code", "20000");
@@ -107,7 +103,7 @@ public class AclUserController {
 
     @ResponseBody
     @PostMapping("/searchUser")
-    public String searchUser(UserSearch userSearch) {
+    public String searchUser(searchVo userSearch) {
         System.out.println("=============================\n" + userSearch);
 //        String username = request.getParameter("username");
 //        String nickname = request.getParameter("nickName");

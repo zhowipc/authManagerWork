@@ -3,8 +3,8 @@
  *@Author 智慧的小西瓜
  *@DOCS http://www.wisdomelon.com/DTreeHelper/
  *@License https://www.layui.com/
- *@LASTTIME 2020/03/31
- *@VERSION v2.5.8
+ *@LASTTIME 2020/01/19
+ *@VERSION v2.5.7
  */
 layui.define(['jquery','layer','form'], function(exports) {
     var $ = layui.$,
@@ -32,7 +32,7 @@ layui.define(['jquery','layer','form'], function(exports) {
         $WIN = $(window),				//window窗口
         $DOC = $(document),				//当前文档
         MOD_NAME = "dtree",				//模块名称
-        VERSION = "v2.5.8",				//版本
+        VERSION = "v2.5.7",				//版本
         OPTIONS = {},					//全局属性配置
         DTrees = {};				    //当前被实例化的树的集合
 
@@ -1580,10 +1580,7 @@ layui.define(['jquery','layer','form'], function(exports) {
 
         setTimeout(function () {
             // 加载完毕后执行树解析前的回调
-            var returnData = _this.success(data, $ul, first);
-            if(returnData) {
-                data = returnData;
-            }
+            _this.success(data, $ul, first);
 
             var pid = (first == true) ? $ul.attr("data-id") : _this.node.nodeId;
             var level = (first == true) ? 1 : parseInt(_this.node.level)+1;
@@ -1671,11 +1668,8 @@ layui.define(['jquery','layer','form'], function(exports) {
                 }
 
                 // 加载完毕后执行树解析前的回调
-                var returnData = _this.success(result, $ul, first);
-                if(returnData) {
-                    result = returnData;
-                }
-
+                _this.success(result, $ul, first);
+                
                 var code = "";
                 if (_this.dataStyle == 'layuiStyle'){
                     code = result[_this.response.statusName];
@@ -1936,7 +1930,7 @@ layui.define(['jquery','layer','form'], function(exports) {
                         checkArrData = {"type":"0","checked":checkArrData};
                     }
                 }
-                if((typeof checkArrData === 'object') && (checkArrData !== null)){
+                if(typeof checkArrData === 'object'){
                     if(typeof checkArrData.length === 'undefined'){
                         checkArr.push(checkArrData);
                     } else {
@@ -2267,10 +2261,10 @@ layui.define(['jquery','layer','form'], function(exports) {
                     _this.getNodeDom($div).snode().next("div").replaceWith($(result));
                 }
             },
-            text: function(title,fmtTitle) {	// 文字显示
+            text: function(title) {	// 文字显示
                 var disClass = "";
                 if(disabled){disClass = NAV_DIS;}
-                var cite = "<cite class='"+LI_DIV_TEXT_CLASS+" "+disClass+"' data-title='"+title+"' data-id='"+treeId+"' data-leaf='"+(last ? "leaf" : "node")+"' dtree-disabled='"+disabled+"' >"+fmtTitle || title+"</cite>"
+                var cite = "<cite class='"+LI_DIV_TEXT_CLASS+" "+disClass+"' data-id='"+treeId+"' data-leaf='"+(last ? "leaf" : "node")+"' dtree-disabled='"+disabled+"' >"+title+"</cite>"
                 _this.getNodeDom($div).cite().replaceWith($(cite));
             },
             ul: function() {	//子节点ul
@@ -2824,7 +2818,7 @@ layui.define(['jquery','layer','form'], function(exports) {
                     replaceDom.div();
                     replaceDom.node(parseData.iconClass());
                     replaceDom.checkbox(parseData.checkArr());
-                    replaceDom.text(parseData.title(),parseData.fmtTitle());
+                    replaceDom.text(parseData.title());
                     replaceDom.ul();
                     replaceDom.basicData(parseData.basicData());
                     replaceDom.recordData(parseData.recordData());
@@ -3535,9 +3529,7 @@ layui.define(['jquery','layer','form'], function(exports) {
         if(_this.toolbar){
             if(_this.toolbarWay == "contextmenu") {
                 _this.obj.prevAll('div#dtree_toolbar_'+_this.obj[0].id).remove();
-                if(_this.toolbarShow && _this.toolbarShow.length > 0) {
-                    _this.obj.before("<div class='"+LI_DIV_TOOLBAR+" layui-nav' id='dtree_toolbar_"+_this.obj[0].id+"'><div class='layui-nav-item'><dl class='layui-nav-child layui-anim'></dl></div></div>");
-                }
+                _this.obj.before("<div class='"+LI_DIV_TOOLBAR+" layui-nav' id='dtree_toolbar_"+_this.obj[0].id+"'><div class='layui-nav-item'><dl class='layui-nav-child layui-anim'></dl></div></div>");
             }
         }
 
@@ -3701,9 +3693,7 @@ layui.define(['jquery','layer','form'], function(exports) {
                         spread = $i_fnode.attr("data-spread"),
                         leaf = $cite.attr("data-leaf");
 
-                    if (leaf == "leaf") {
-                        continue;
-                    }	// 说明是叶子了，则继续循环下一个
+                    if (leaf == "leaf") { continue;	}	// 说明是叶子了，则继续循环下一个
 
                     if (spread == "open") {
                         // 说明该节点已经展开了，则进行子节点循环
@@ -3741,9 +3731,7 @@ layui.define(['jquery','layer','form'], function(exports) {
                         leaf = $cite.attr("data-leaf");
 
                     $ul.removeClass(NAV_SHOW);
-                    if(leaf !== "leaf") {
-                        _this.operateIcon($i_fnode, $i_snode).close();
-                    }
+                    _this.operateIcon($i_fnode, $i_snode).close();
                 });
             },
             refreshTree: function(){// 刷新树
@@ -4070,9 +4058,7 @@ layui.define(['jquery','layer','form'], function(exports) {
                         leaf = $cite.attr("data-leaf");
 
                     $ul.removeClass(NAV_SHOW);
-                    if(leaf !== "leaf") {
-                        _this.operateIcon($i_fnode, $i_snode).close();
-                    }
+                    _this.operateIcon($i_fnode, $i_snode).close();
                 });
             }
         }
@@ -4159,8 +4145,7 @@ layui.define(['jquery','layer','form'], function(exports) {
                     success: function(layero, index){
                         _this.toolbarFun.editTreeLoad(_this.getRequestParam(_this.getNodeParam($div)));
                         form.render();
-                        form.on("submit(dtree_editNode_" + _this.obj[0].id + "_form)",function(data){
-
+                        form.on("submit(dtree_editNode_form)",function(data){
                             var data = data.field;
                             $cite.html(data.editNodeName);
                             node = _this.getNodeParam($div);
@@ -4211,11 +4196,9 @@ layui.define(['jquery','layer','form'], function(exports) {
         var html = "";
         switch (name) {
             case defaultTool.addTool:
-                var addNodeBarDef = [{"label": "当前选中", "name": "nodeTitle", "type": "text", "value": title, "defElem": "nowChoose", "hidden":true, "readonly": true},
-                    {"label": "新增"+_this.toolbarStyle.title, "name": "addNodeName", "type": "text", "value": "", "defElem": "nowChange", "hidden":true, },
+                var addNodeBarDef = [{"label": "当前选中", "name": "nodeTitle", "type": "text", "value": title, "defElem": "nowChoose", "readonly": true},
+                    {"label": "新增"+_this.toolbarStyle.title, "name": "addNodeName", "type": "text", "value": "", "defElem": "nowChange", "verify": "required"},
                     {"type": "submit", "value": "确认添加", "defElem": "btn", "filter": "dtree_addNode_" + _this.obj[0].id + "_form"}];
-                // var addNodeBarDef = [
-                //     {"type": "submit", "value": "确认添加", "defElem": "btn", "filter": "dtree_addNode_" + _this.obj[0].id + "_form"}];
 
                 //2. 用户自定义的节点内容
                 var addNodeBar = ['<div class="'+TOOLBAR_TOOL+'"><form class="layui-form layui-form-pane" lay-filter="dtree_addNode_' + _this.obj[0].id + '_form">'];
@@ -4285,10 +4268,9 @@ layui.define(['jquery','layer','form'], function(exports) {
                 break;
 
             case defaultTool.editTool:
-                var editNodeBarDef = [{"label": "当前选中", "name": "nodeTitle", "type": "text", "value": title, "defElem": "nowChoose", "hidden":true, "readonly": true},
-                    {"label": "编辑"+_this.toolbarStyle.title, "name": "editNodeName", "type": "text", "value": "", "defElem": "nowChange", "hidden":true,},
+                var editNodeBarDef = [{"label": "当前选中", "name": "nodeTitle", "type": "text", "value": title, "defElem": "nowChoose", "readonly": true},
+                    {"label": "编辑"+_this.toolbarStyle.title, "name": "editNodeName", "type": "text", "value": "", "defElem": "nowChange", "verify": "required"},
                     {"type": "submit", "value": "确认编辑", "defElem": "btn", "filter": "dtree_editNode_" + _this.obj[0].id + "_form"}];
-                // var editNodeBarDef = [{"type": "submit", "value": "确认编辑", "defElem": "btn", "filter": "dtree_editNode_" + _this.obj[0].id + "_form"}];
 
                 var editNodeBar = ['<div class="'+TOOLBAR_TOOL+'"><form class="layui-form layui-form-pane" lay-filter="dtree_editNode_' + _this.obj[0].id + '_form">'];
                 //2. 用户自定义的节点内容
@@ -4545,13 +4527,13 @@ layui.define(['jquery','layer','form'], function(exports) {
         var flag = false;
         if(returnID){
             if(typeof returnID === "object"){
-                var parseData = _this.parseData(returnID);
+                var parseData = _this.parseData(data);
 
                 if(parseData.treeId()){
                     var replaceDom = _this.replaceDom($div, parseData.treeId(), parseData.last(0), parseData.spread(), parseData.disabled(), parseData.hide());
                     replaceDom.node(parseData.iconClass());
                     replaceDom.checkbox(parseData.checkArr());
-                    replaceDom.text(parseData.title(),parseData.fmtTitle());
+                    replaceDom.text(parseData.title());
                     replaceDom.ul();
                     replaceDom.basicData(parseData.basicData());
                     replaceDom.recordData(parseData.recordData());
