@@ -153,15 +153,27 @@ public class GoodsController {
                 goodsQueryWrapper.ge("price", searchVo.getMinPrice());
             }
             if (searchVo.getMaxPrice() != null && !searchVo.getMaxPrice().trim().equals("")) {
-                goodsQueryWrapper.ge("price", searchVo.getMaxPrice());
+                goodsQueryWrapper.le("price", searchVo.getMaxPrice());
             }
         }
         Page<Goods> goods = new Page<>(page, limit);
         goodsService.page(goods, goodsQueryWrapper);
+        if (goods.getPages() < page && goods.getPages() != 0) {
+            System.out.println("====================总页面" + goods.getPages() + "跳转页面:" + page);
+            return R.error();
+        }
         return R.ok().data("item", goods.getRecords())
                 .data("title", goods.getTotal())
                 .data("pages", goods.getPages())
                 .data("current", goods.getCurrent());
     }
 
+    @GetMapping("getInfoById/{goodsId}")
+    public @ResponseBody
+    R getInfoById(@PathVariable String goodsId) {
+        Goods infoById = goodsService.getInfoById(goodsId);
+        return R.ok().data("title", infoById.getTitle())
+                .data("src", infoById.getCover())
+                .data("price", infoById.getPrice());
+    }
 }

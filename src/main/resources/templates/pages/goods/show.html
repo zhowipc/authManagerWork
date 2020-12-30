@@ -7,7 +7,7 @@
 <div>
 
     <div>
-        <form class="layui-form" id="condition-form">
+        <form class="layui-form" id="condition-form" method="post">
             <div class="layui-form-item">
                 <div class="layui-inline">
                     <label class="layui-form-label">标题</label>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="layui-form-item layui-inline">
                     <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="getInit()">立即查找
+                        <button class="layui-btn" lay-submit lay-filter="formDemo" onclick="getInit(0)">立即查找
                         </button>
                         <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
@@ -41,7 +41,7 @@
 
 
     </div>
-    <nav aria-label="Page navigation example" style="margin-left: 30%">
+    <nav aria-label="Page navigation example" id="showPage" style="margin-left: 30%">
         <ul class="pagination">
             <li class="page-item">
                 <a class="page-link" onclick="getInit(-1)" aria-label="Previous">
@@ -56,11 +56,63 @@
             </li>
         </ul>
     </nav>
+    <div class="modal fade" id="Tip" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>提示</h3>
+                </div>
+                <div class="modal-body" align="center">
+                    <h4 id="tipContent">新增成功</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>购买</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="Form" method="post" class="form-horizontal">
+                        <div class="form-group" style="display:none">
+                            <label for="goodsId" class="col-sm-2 control-label">ID</label>
+                            <div class="col-sm-7">
+                                <input type="id" name="id" class="form-control" id="goodsId" placeholder="ID"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="title">标题</label>
+                            <input type="text" class="form-control" readonly id="title">
+                        </div>
+                        <img id="showImgs" class="rounded mx-auto d-block" src="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">数量</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="num" autocomplete="off" class="layui-input" id="num"
+                                       style="width: 100px">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="conf2" class="btn btn-default" onclick="bug()">确定</button>
+                    <button type="reset" class="btn btn-default" data-dismiss="modal" onclick="resetAddModal()">取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
+
     var page = 1, limit = 6;
     var totalPages = -1
-    getInit();
     layui.use('form', function () {
         var form = layui.form;
         form.on('submit(formDemo)', function (data) {
@@ -68,18 +120,27 @@
             return false;
         });
     })
+    var arr = [];
+
     function getInit(p = 0) {
+        tem = page
+        if (p == 0) {
+            tem = 1;
+        } else {
+            tem = (tem + p)
+        }
 
         console.log("getInit")
-        if ((page + p) > totalPages && totalPages != -1) {
-            return ;
-        }
-        if (page + p <= 0) {
-            return ;
-        }
+        // if ((page + p) > totalPages && totalPages != -1) {
+        //     return ;
+        // }
+        // if (page + p <= 0) {
+        //     return ;
+        // }
         $.ajax({
-            url: "/goods/getInitData/" + (page + p) + "/" + limit,
+            url: "/goods/getInitData/" + tem + "/" + limit,
             method: "post",
+            async: false,
             data: {
                 title: $("#inputTitle").val(),
                 minPrice: $("#inputMinPrice").val(),
@@ -87,57 +148,109 @@
             },
             dataType: "json",
             success: function (response) {
-                var param = response.data.item;
-                var n = param.length;
-                var k = n >= 3 ? 6 : 3;
-                console.log(response)
-                var html = "";
-                for (var i = 0; i < k; i++) {
-                    if (i == 0 || i == 3) {
-                        html += "<div class=\"row\">\n";
-                    }
-                    if (i < n) {
-                        html += "<div class=\"col-sm\">\n" +
-                            "                <div class=\"card\" onclick=\"gotoDetail(" + param[i].id + ")\" style=\"width: 18rem;\">\n" +
-                            "                    <img src=\"" + param[i].cover + "\" class=\"card-img-top\" alt=\"...\">\n" +
-                            "                    <div class=\"card-body\">\n" +
-                            "                        <p class=\"card-text\">" + param[i].title + "</p>\n" +
-                            "                    </div>\n" +
-                            "                </div>\n" +
-                            "            </div>"
-                    } else {
-                        html += "<div class=\"col-sm\">\n" +
-                            "            </div>";
-                    }
-                    if (i == 2 || i == 5) {
-                        html += " </div>"
-                    }
-                }
-                if (response.data.code == "20001") {
-                    $("#showNum").hide();
+                //页数超过限定
+                if (response.code == "20001") {
+                    // $("#showNum").hide();
                 } else {
+                    console.log(response)
+                    var param = response.data.item;
+                    var n = param.length;
+                    var k = n >= 3 ? 6 : 3;
+                    var html = "";
+
+                    for (var i = 0; i < k; i++) {
+                        if (i == 0) arr = []
+                        if (i == 0 || i == 3) {
+                            html += "<div class=\"row\">\n";
+                        }
+                        if (i < n) {
+                            arr.push(param[i].id)
+                            html += "<div class=\"col-sm\">\n" +
+                                "                <div class=\"card\"  style=\"width: 18rem;\">\n" +
+                                "                    <img src=\"" + param[i].cover + "\" class=\"card-img-top\" alt=\"...\">\n" +
+                                "                    <div class=\"card-body\">\n" +
+                                "                        <p class=\"card-text\">" + param[i].title + "</p>\n" +
+                                "                       <button type=\"button\" onclick=\"gotoDetail(" + i + '' + ")\" class=\"btn dfg btn-outline-danger\" style='width: 100%'>" + param[i].price + "￥</button>" +
+                                "                    </div>\n" +
+                                "                </div>\n" +
+                                "            </div>"
+                        } else {
+                            html += "<div class=\"col-sm\">\n" +
+                                "            </div>";
+                        }
+                        if (i == 2 || i == 5) {
+                            html += " </div>"
+                        }
+                    }
+                    $("#show div").remove();
+                    $("#show").append(html)
+                    $("#num").val(1);
                     totalPages = response.data.pages;
                     page = response.data.current;
                     $("#showNum").show();
+                    if (n == 0)
+                        $("#showPage").hide();
                     $("#showNum").text(page);
                 }
-                if ((page + p) > totalPages) {
-                    return ;
-                }
-                if (page + p <= 0) {
-                    return ;
-                }
-
-                $("#show div").remove();
-                $("#show").append(html)
+                // console.log(arr)
             }
         })
     }
 
-    function gotoDetail() {
+    var price = 0;
 
+    function gotoDetail(event) {
+        // console.log(event)
+        // console.log(arr)
+        // console.log(arr[event])
+        // console.log($(".dfg"))
+        $.ajax({
+            url: "/goods/getInfoById/" + arr[event],
+            method: "get",
+            typeData: "json",
+            async: false,
+            success: function (response) {
+                var param = response.data;
+                // console.log(param)
+                $("#goodsId").val(arr[event])
+                $("#title").val(param.title)
+                $("#showImgs").attr("src", param.src)
+                price = param.price
+                $("#Modal").modal("show")
+                $("#conf2").text(price + "￥")
+            }
+        })
     }
 
+    $("#num").change(function () {
+        $("#conf2").text((parseFloat($("#num").val()) * parseFloat(price)).toFixed(2) + "￥");
+    })
+
+    function bug() {
+        var param = {}
+        param.title = $("#title").val()
+        param.cover = $("#showImgs").attr("src")
+        param.price1 = $("#conf2").text()
+        param.goodsId = $("#goodsId").val()
+        param.buyCount = $("#num").val()
+        $.ajax({
+            url:"/t-order/bug",
+            method:"post",
+            dataType:"json",
+            data:param,
+            success: function (response) {
+                $("#Modal").modal("hide");
+                document.getElementById("tipContent").innerText = "购买成功";
+                $("#Tip").modal('show');
+
+            }
+        })
+    }
+
+    $(function () {
+
+        getInit(0);
+    })
 </script>
 </body>
 </html>
