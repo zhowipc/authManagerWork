@@ -72,6 +72,7 @@
         </div>
     </div>
 
+<!--    购买-->
     <div class="modal fade" id="Modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -84,6 +85,12 @@
                             <label for="goodsId" class="col-sm-2 control-label">ID</label>
                             <div class="col-sm-7">
                                 <input type="id" name="id" class="form-control" id="goodsId" placeholder="ID"/>
+                            </div>
+                        </div>
+                        <div class="form-group" style="display:none">
+                            <label for="goodsId" class="col-sm-2 control-label">belongId</label>
+                            <div class="col-sm-7">
+                                <input type="id" name="id" class="form-control" id="belongId" placeholder="ID" value=""/>
                             </div>
                         </div>
                         <div class="form-group">
@@ -167,7 +174,8 @@
                             arr.push(param[i].id)
                             html += "<div class=\"col-sm\">\n" +
                                 "                <div class=\"card\"  style=\"width: 18rem;\">\n" +
-                                "                    <img src=\"" + param[i].cover + "\" class=\"card-img-top\" alt=\"...\">\n" +
+                                "                    <img src=\"" + param[i].cover + "\" class=\"card-img-top\" >\n" +
+                                " <span style=\"display:none\" id='showBelongId' >" + param[i].memberId + "</span> " +
                                 "                    <div class=\"card-body\">\n" +
                                 "                        <p class=\"card-text\">" + param[i].title + "</p>\n" +
                                 "                       <button type=\"button\" onclick=\"gotoDetail(" + i + '' + ")\" class=\"btn dfg btn-outline-danger\" style='width: 100%'>" + param[i].price + "￥</button>" +
@@ -211,10 +219,12 @@
             async: false,
             success: function (response) {
                 var param = response.data;
+                console.log(param);
                 // console.log(param)
                 $("#goodsId").val(arr[event])
                 $("#title").val(param.title)
                 $("#showImgs").attr("src", param.src)
+                $("#belongId").val(param.belongId);
                 price = param.price
                 $("#Modal").modal("show")
                 $("#conf2").text(price + "￥")
@@ -233,11 +243,12 @@
         param.price1 = $("#conf2").text()
         param.goodsId = $("#goodsId").val()
         param.buyCount = $("#num").val()
+        param.belongId = $("#belongId").val()
         $.ajax({
-            url:"/t-order/bug",
-            method:"post",
-            dataType:"json",
-            data:param,
+            url: "/t-order/bug",
+            method: "post",
+            dataType: "json",
+            data: param,
             success: function (response) {
                 $("#Modal").modal("hide");
                 document.getElementById("tipContent").innerText = "购买成功";

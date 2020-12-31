@@ -50,6 +50,11 @@ public class TOrder implements Serializable {
     @ApiModelProperty(value = "商品规格")
     private String specification;
 
+    private String belongId;
+
+    @TableField(exist = false)
+    private String belongName;
+
     @ApiModelProperty(value = "商品封面")
     private String cover;
 

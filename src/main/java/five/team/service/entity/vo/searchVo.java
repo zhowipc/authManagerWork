@@ -13,4 +13,6 @@ public class searchVo {
     private String title;
     private String minPrice;
     private String maxPrice;
+    private String belongId;
+    private String belongName;
 }

@@ -56,6 +56,8 @@ public class GoodsController {
     @PostMapping("/addGoods")
     public @ResponseBody
     String addGoods(Goods goods) {
+        System.out.println("=========================================GoodsController.addGoods");
+        System.out.println(goods);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         AclUser aclUser = userService.getOne(new QueryWrapper<AclUser>().eq("username", username));
         goods.setMemberId(aclUser.getId());
@@ -89,10 +91,12 @@ public class GoodsController {
     @GetMapping("getAllGoods")
     public @ResponseBody
     String getAllGoods() {
-        List<Goods> list = goodsService.list(null);
+
+        List<Goods> list = goodsService.list(new QueryWrapper<Goods>().orderByDesc("gmt_create"));
         for (Goods goods : list) {
             AclUser id = userService.getOne(new QueryWrapper<AclUser>().eq("id", goods.getMemberId()));
-            goods.setMember(id.getUsername());
+            if (id != null)
+                goods.setMember(id.getUsername());
         }
         JSONObject result = new JSONObject();
         result.put("rows", list);
@@ -122,7 +126,7 @@ public class GoodsController {
                 wrapper.le("price", searchVo.getMaxPrice());
             }
         }
-
+        wrapper.orderByDesc("gmt_create");
         List<Goods> list = goodsService.list(wrapper);
         for (Goods goods : list) {
             AclUser id = userService.getOne(new QueryWrapper<AclUser>().eq("id", goods.getMemberId()));
@@ -156,6 +160,7 @@ public class GoodsController {
                 goodsQueryWrapper.le("price", searchVo.getMaxPrice());
             }
         }
+        goodsQueryWrapper.orderByDesc("gmt_create");
         Page<Goods> goods = new Page<>(page, limit);
         goodsService.page(goods, goodsQueryWrapper);
         if (goods.getPages() < page && goods.getPages() != 0) {
@@ -174,6 +179,7 @@ public class GoodsController {
         Goods infoById = goodsService.getInfoById(goodsId);
         return R.ok().data("title", infoById.getTitle())
                 .data("src", infoById.getCover())
-                .data("price", infoById.getPrice());
+                .data("price", infoById.getPrice())
+                .data("belongId", infoById.getMemberId());
     }
 }

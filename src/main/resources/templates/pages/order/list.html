@@ -1,10 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:include="include::header"></head>
 <body>
-订单管理
+<div class="ma-center" style="margin: 30px;">
+    <form class="layui-form" id="condition-form">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="title" autocomplete="off" id="title" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商家名</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="username" autocomplete="off" id="belongName" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">price</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="price_min" placeholder="￥" id="minPrice" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="price_max" placeholder="￥" id="maxPrice" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-inline">
+                <div class="layui-input-block">
+                    <button type="button" class="btn btn-secondary"  onclick="searchSubmit()">立即查找</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<table class="table" id="bootstrap-table">
+</table>
+<div th:include="include::footer"></div>
+<script>
+    function searchSubmit() {
+        var param = {}
+        param.title = $("#title").val()
+        param.minPrice = $("#minPrice").val()
+        param.belongName = $("#belongName").val()
+        param.maxPrice = $("#maxPrice").val()
+        // console.log(param)
+        $.ajax({
+            url:"/t-order/getListCont",
+            method:"post",
+            dataType:"json",
+            data:param,
+            success:function (response) {
+                $("#bootstrap-table").bootstrapTable('load', response);
+            }
+        })
+
+    }
+
+    var tableColumns = [
+        {checkbox: true, visible: true},
+        // {field: 'title', title: "商品标题"},
+        {field: 'cover', title: "封面", formatter: "imgShowFormatter"},
+        {field: 'buyCount', title: "购买数量"},
+        {field: 'belongName', title: "商家"},
+        {field: 'price', title: "价格",},
+        // {field: 'id', title: "handle", formatter: 'actionFormatter'},
+    ]
+    $("#bootstrap-table").bootstrapTable({
+        url: "/t-order/getAllList",
+        method: "get",
+        dataType: "json",
+        striped: true,//是否显示行间隔色
+        cache: false,
+        // toolbar: '#toolbar', //工具按钮用哪个容器
+        pagination: true,                   //是否显示分页（*）
+        showPaginationSwitch: true,  //显示切换分页
+        showFullscreen: false, //显示全屏
+        contentType: "application/x-www-form-urlencoded",
+        sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
+        showRefresh: true, //是否显示刷新按钮
+        pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+        pageSize: 5,                     //每页的记录行数（*）
+        pageList: [5, 10, 25, 50, 100],        //可供选择的每页的行数（*）
+        // strictSearch: true,
+        showColumns: true,                  //是否显示所有的列（选择显示的列）
+        clickToSelect: true,                //是否启用点击选中行
+        uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+        columns: tableColumns,
+        sortName: "price",
+        sortOrder: "desc",
+        minimumCountColumns: 2,             //最少允许的列数
+        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图
+        detailView: false,                   //是否显示父子表
+    })
+
+
+    function imgShowFormatter(value, row, index) {
+        var html = ""
+        html += "<div class=\"card mb-3\" style=\"min-width: 150px; max-width: 300px;max-height: 200px; min-height: 90px;\">\n" +
+            "  <div class=\"row no-gutters\">\n" +
+            "    <div class=\"col-md-4\">\n" +
+            "      <img src=\"" + row.cover + "\" class=\"card-img\" >\n" +
+            "    </div>\n" +
+            "    <div class=\"col-md-8\">\n" +
+            "      <div class=\"card-body\">\n" +
+            "        <h5 class=\"card-title\">" + row.title + "</h5>\n" +
+            "      </div>\n" +
+            "    </div>\n" +
+            "  </div>\n" +
+            "</div>"
+        return html
+    }
+</script>
 </body>
 </html>

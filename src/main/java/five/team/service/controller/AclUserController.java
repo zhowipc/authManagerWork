@@ -11,6 +11,7 @@ import five.team.service.service.AclRoleService;
 import five.team.service.service.AclUserService;
 import five.team.service.utils.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,9 @@ public class AclUserController {
     @PostMapping("/addUser")
     public String addUser(AclUser user) {
         System.out.println("==================================\n" + user);
+        List<AclUser> username = userService.list(new QueryWrapper<AclUser>().eq("username", user.getUsername()));
+        if (username.size() != 0)
+            return "false";
         user.setPassword(MD5.encrypt(user.getPassword()));
         userService.save(user);
         JSONObject r = new JSONObject();
@@ -67,10 +71,14 @@ public class AclUserController {
     @PostMapping("/deleteUserInfo")
     public R deleteUserById(HttpServletRequest request) {
         String id = request.getParameter("id");
-        List<String> list = Arrays.asList(id);
-//        userService.removeById(id);
-        userService.removeByIds(list);
-        return R.ok();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        AclUser username1 = userService.getOne(new QueryWrapper<AclUser>().eq("username", username));
+        if (!username1.getId().equals(id)) {
+            userService.removeById(id);
+            return R.ok();
+        }
+//        userService.removeByIds(list);
+        return R.error();
     }
 
     /*

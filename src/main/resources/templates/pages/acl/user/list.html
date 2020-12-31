@@ -40,7 +40,7 @@
     <div class="btn-group btn-group-toggle" data-toggle="buttons" id="toolbar">
         <button type="button" class="btn btn-primary btn-sm" onclick="deleteBatchIds()">批量删除</button>
         <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                data-target="#addUserModal" data-backdrop="false">添加
+                data-target="#addUserModal" data-backdrop="false" onclick="resetUserModal()">添加
         </button>
     </div>
     <div class="modal fade" id="Tip" role="dialog">
@@ -134,6 +134,12 @@
 </div>
 <div th:include="include::footer"></div>
 <script>
+    function resetUserModal() {
+        $("#inputAccount").val("");
+        $("#inputPassword1").val("")
+
+    }
+
     var tableColumns = [
         {checkbox: true, visible: true},
         {field: 'username', title: "username"},
@@ -335,7 +341,10 @@
                     data: {id: rows[i].id},
                     success: function (response) {
                         console.log(response.code)
-                        document.getElementById("tipContent").innerText = "删除成功";
+                        if (response.code == "20000")
+                            document.getElementById("tipContent").innerText = "删除成功";
+                        else
+                            document.getElementById("tipContent").innerText = "删除失败";
                         $("#Tip").modal('show');
                         $("#bootstrap-table").bootstrapTable("refresh");
 
@@ -394,16 +403,19 @@
             async: false,
             dataType: "json",
             success: function (data) {
-                if (data.code == "20000") {
-                    $("#addUserModal").modal('hide');
+                console.log(data)
+                $("#addUserModal").modal('hide');
+                if (data.code == "20000")
                     document.getElementById("tipContent").innerText = "添加成功";
-                    $("#Tip").modal('show');
-                    $('.modal-backdrop').remove(); //去掉遮罩层
-                    $("#bootstrap-table").bootstrapTable('refresh');
+                else if (data == "false") {
+                    document.getElementById("tipContent").innerText = "用户存在";
                 } else {
                     document.getElementById("tipContent").innerText = "新增失败";
-                    $("#bootstrap-table").modal('show');
                 }
+                $("#Tip").modal('show');
+                $('.modal-backdrop').remove(); //去掉遮罩层
+                $("#bootstrap-table").bootstrapTable('refresh');
+
             },
             error: function () {
 

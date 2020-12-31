@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">用户</label>
+                <label class="layui-form-label">商家名</label>
                 <div class="layui-input-inline" style="width: 100px;">
                     <input type="text" name="username" autocomplete="off" id="inputUsername" class="layui-input">
                 </div>
@@ -37,10 +37,10 @@
                     <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                 </div>
             </div>
-
-
         </div>
     </form>
+
+
     <div class="btn-group btn-group-toggle" data-toggle="buttons" id="toolbar">
         <button type="button" class="btn btn-primary btn-sm" onclick="deleteBatchIds()">批量删除</button>
         <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
@@ -92,7 +92,7 @@
                                 </button>
                             </div>
                             <div class="layui-input-block">
-                                <img alt="..." style="width: 150px;height: 150px" class="img-thumbnail"
+                                <img style="width: 150px;height: 150px" class="img-thumbnail"
                                      id="addShowImages">
                             </div>
                         </div>
@@ -151,7 +151,7 @@
                                 </button>
                             </div>
                             <div class="layui-input-block">
-                                <img alt="..." style="width: 150px;height: 150px" class="img-thumbnail"
+                                <img  style="width: 150px;height: 150px" class="img-thumbnail"
                                      id="showImages">
                             </div>
                         </div>
@@ -345,7 +345,8 @@
 
     function add() {
         var param = $("#addForm").serializeArray();
-        param.file = url;
+        param.push({name:"file", value: url})
+
         console.log(param);
         $.ajax({
             url: "/goods/addGoods",

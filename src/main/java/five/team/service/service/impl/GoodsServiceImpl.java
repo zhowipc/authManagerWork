@@ -22,6 +22,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public Goods getInfoById(String goodsId) {
         QueryWrapper<Goods> goodsQueryWrapper = new QueryWrapper<>();
         goodsQueryWrapper.eq("id", goodsId);
+        goodsQueryWrapper.orderByDesc("gmt_create");
         Goods goods = baseMapper.selectOne(goodsQueryWrapper);
         return goods;
     }
