@@ -26,7 +26,7 @@ public class RouterController {
 
     @RequestMapping("main")
     public String main() {
-        System.out.println("RouterController.main");
+        System.out.println("=========================RouterController.main");
         return "redirect:toMain";
     }
 

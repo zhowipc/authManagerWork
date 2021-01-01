@@ -55,7 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.formLogin()
                 .loginPage("/toLogin")
-                .loginProcessingUrl("/login").successForwardUrl("/main");
+                .loginProcessingUrl("/login").successForwardUrl("/main")
+                .failureForwardUrl("/toLogin");
         http.logout().logoutSuccessUrl("/toLogin");
         http.rememberMe();
 
@@ -72,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/bootstrap/**");
+        web.ignoring().antMatchers("/**.css","/**.js","/**.png","/imgs/**","/**.jpg");
         //        web.ignoring().antMatchers("/", "/index", "/login/**", "/register", "/logout", "/toRegister");
     }
 }
