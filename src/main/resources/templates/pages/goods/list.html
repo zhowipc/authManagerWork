@@ -151,7 +151,7 @@
                                 </button>
                             </div>
                             <div class="layui-input-block">
-                                <img  style="width: 150px;height: 150px" class="img-thumbnail"
+                                <img style="width: 150px;height: 150px" class="img-thumbnail"
                                      id="showImages">
                             </div>
                         </div>
@@ -208,7 +208,7 @@
         clickToSelect: true,                //是否启用点击选中行
         uniqueId: "id",                     //每一行的唯一标识，一般为主键列
         columns: tableColumns,
-        sortName: "price",
+        sortName: "gmtCreate",
         sortOrder: "desc",
         minimumCountColumns: 2,             //最少允许的列数
         showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
@@ -345,7 +345,7 @@
 
     function add() {
         var param = $("#addForm").serializeArray();
-        param.push({name:"file", value: url})
+        param.push({name: "file", value: url})
 
         console.log(param);
         $.ajax({

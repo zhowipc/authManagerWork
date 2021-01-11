@@ -12,10 +12,10 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">标题</label>
                     <div class="layui-input-inline" style="width: 100px;">
-                        <input type="text" name="title" autocomplete="off" id="inputTitle" class="layui-input">
+                        <input type="text" name="title" autocomplete="off" id="inputTitle" style="width: 200px" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-inline">
+                <div class="layui-inline" style="margin-left: 150px">
                     <label class="layui-form-label">price</label>
                     <div class="layui-input-inline" style="width: 100px;">
                         <input type="text" name="price_min" placeholder="￥" id="inputMinPrice" autocomplete="off"
@@ -41,7 +41,7 @@
 
 
     </div>
-    <nav aria-label="Page navigation example" id="showPage" style="margin-left: 30%">
+    <nav aria-label="Page navigation example" id="showPage" style="margin-left: 40%">
         <ul class="pagination">
             <li class="page-item">
                 <a class="page-link" onclick="getInit(-1)" aria-label="Previous">
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-<!--    购买-->
+    <!--    购买-->
     <div class="modal fade" id="Modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -97,7 +97,10 @@
                             <label for="title">标题</label>
                             <input type="text" class="form-control" readonly id="title">
                         </div>
-                        <img id="showImgs" class="rounded mx-auto d-block" src="">
+                        <div class="form-group">
+                            <img id="showImgs" class="rounded mx-auto d-block" style="width: 200px; height: 200px">
+                        </div>
+
                         <div class="layui-form-item">
                             <label class="layui-form-label">数量</label>
                             <div class="layui-input-block">
@@ -174,11 +177,12 @@
                             arr.push(param[i].id)
                             html += "<div class=\"col-sm\" style=''>\n" +
                                 "                <div class=\"card\"  style=\"width: 18rem;\">\n" +
-                                "                    <img src=\"" + param[i].cover + "\" class=\"card-img-top\" >\n" +
+                                "                    <img src=\"" + param[i].cover + "\" class=\"card-img-top\" style=' height: 300px' >\n" +
                                 " <span style=\"display:none\" id='showBelongId' >" + param[i].memberId + "</span> " +
-                                "                    <div class=\"card-body\">\n" +
-                                "                        <p class=\"card-text\">" + param[i].title + "</p>\n" +
-                                "                       <button type=\"button\" onclick=\"gotoDetail(" + i + '' + ")\" class=\"btn dfg btn-outline-danger\" style='width: 100%'>" + param[i].price + "￥</button>" +
+                                "                    <div class=\"card-body\" >\n" +
+                                "                        <p class=\"card-text\" style='min-height: 60px; '>" + param[i].title + "</p>\n" +
+
+                                "                       <button  type=\"button\" onclick=\"gotoDetail(" + i + '' + ")\" class=\"btn dfg btn-outline-danger\" style='width: 100%; '>" + param[i].price + "￥</button>" +
                                 "                    </div>\n" +
                                 "                </div>\n" +
                                 "            </div>"
